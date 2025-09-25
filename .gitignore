@@ -1,0 +1,18 @@
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore Terraform history and crash logs
+.terraform/
+.terraformrc
+crash.log
+
+# Ignore local settings and provider binaries
+override.tf
+override.tf.json
+*tfvars
+.vscode/
+
+# Ignore explicit provider binaries
+# These are the large files that caused the error!
+.terraform/providers
