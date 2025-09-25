@@ -1,0 +1,44 @@
+# .github/workflows/deploy.yml
+
+name: 'Terraform Plan/Apply CI/CD'
+
+on:
+  push:
+    branches:
+      - master # Your branch is 'master'
+  pull_request:
+    branches:
+      - master # Your branch is 'master'
+
+jobs:
+  terraform:
+    name: 'Terraform Plan and Apply'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Required for OIDC authentication
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }} # The secret you added in Step 1
+          aws-region: us-east-1 # Ensure this matches your region
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        id: init
+        run: terraform init
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -no-color
+
+      - name: Terraform Apply (Auto-Approve for master branch push)
+        # This only runs 'apply' on the master branch when you push to it
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: terraform apply -auto-approve
