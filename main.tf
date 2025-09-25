@@ -170,7 +170,7 @@ resource "aws_security_group" "web_sg" {
 
 # 10. EC2 Instance (Web Server)
 resource "aws_instance" "web_server" {
-  ami           = "ami-053b0d53c27927909" # Example Amazon Linux 2 AMI in us-east-1
+  ami           = "ami-055743a6d71b3e77c" # Example Amazon Linux 2 AMI in us-east-1
   instance_type = "t2.micro"
   subnet_id     = aws_subnet.public.id
   security_groups = [aws_security_group.web_sg.id]
