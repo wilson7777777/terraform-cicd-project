@@ -5,10 +5,10 @@ name: 'Terraform Plan/Apply CI/CD'
 on:
   push:
     branches:
-      - master # Your branch is 'master'
+      - master # Triggers on push to the master branch
   pull_request:
     branches:
-      - master # Your branch is 'master'
+      - master
 
 jobs:
   terraform:
@@ -21,11 +21,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (Assume IAM Role)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }} # The secret you added in Step 1
-          aws-region: us-east-1 # Ensure this matches your region
+          role-to-assume: ${{ secrets.AWS_OIDC_ROLE_ARN }} # Secret containing the IAM Role ARN
+          aws-region: us-east-1 # Match your deployment region
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
@@ -39,6 +39,6 @@ jobs:
         run: terraform plan -no-color
 
       - name: Terraform Apply (Auto-Approve for master branch push)
-        # This only runs 'apply' on the master branch when you push to it
+        # Only applies changes when merging to master, keeps PRs as Plan only
         if: github.ref == 'refs/heads/master' && github.event_name == 'push'
         run: terraform apply -auto-approve
